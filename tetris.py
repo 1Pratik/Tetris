@@ -78,11 +78,13 @@ def remove_row(board, row):
 
 class TetrisApp(object):
     def __init__(self):
+        # initialize the pygame
         pygame.init()
         pygame.key.set_repeat(250, 25)
         self.width = config['cell_size'] * config['cols']
         self.height = config['cell_size'] * config['rows']
 
+        # set the dispay screen with height and width
         self.screen = pygame.display.set_mode((self.width, self.height))
         # pygame.event.set_blocked(pygame.MOUSEMOTION)
 
@@ -129,7 +131,7 @@ class TetrisApp(object):
                 self.stone_x = new_x
 
     def quit(self):
-        self.center_msg("Existing.......")
+        self.center_msg("Exiting.......")
         pygame.display.update()
         sys.exit()
 
@@ -177,6 +179,8 @@ class TetrisApp(object):
 
         pygame.time.set_timer(pygame.USEREVENT+1, config['delay'])
         dont_burn_my_cpu = pygame.time.Clock()
+
+        # Game loop
         while 1:
             self.screen.fill((0, 0, 0))
             if self.gameover:
@@ -190,6 +194,7 @@ class TetrisApp(object):
 
             pygame.display.update()
 
+            # pygame events are captured
             for event in pygame.event.get():
                 if event.type == pygame.USEREVENT + 1:
                     self.drop()
