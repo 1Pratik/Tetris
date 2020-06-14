@@ -10,8 +10,8 @@ import sys
 # configuration
 config = {
     'cell_size': 20,
-    'cols': 8,
-    'rows': 16,
+    'cols': 16,
+    'rows': 20,
     'delay': 750,
     'maxfps': 30
 }
@@ -37,6 +37,15 @@ tetris_shape = [
     [[6, 6, 6, 6]],
     [[7, 7], [7, 7]]
 ]
+
+
+# images icon, fighter, background
+icon = pygame.image.load('images/GameIcon.png')
+jetImage = pygame.image.load('images/fighter-plane.png')
+backImage1 = pygame.image.load('images/background3.jpg')
+backImage2 = pygame.image.load('images/RetroBackground.png')
+backImage3 = pygame.image.load('images/sunnyday.png')
+backImage4 = pygame.image.load('images/back1.png')
 
 
 def new_board():
@@ -80,6 +89,8 @@ class TetrisApp(object):
     def __init__(self):
         # initialize the pygame
         pygame.init()
+        pygame.font.init()
+        self.font = pygame.font.Font('freesansbold.ttf', 16)
         pygame.key.set_repeat(250, 25)
         self.width = config['cell_size'] * config['cols']
         self.height = config['cell_size'] * config['rows']
@@ -87,6 +98,8 @@ class TetrisApp(object):
         # set the dispay screen with height and width
         self.screen = pygame.display.set_mode((self.width, self.height))
         # pygame.event.set_blocked(pygame.MOUSEMOTION)
+        self.imageNo = 0
+        self.score_value = 0
 
         self.init_game()
 
@@ -101,6 +114,11 @@ class TetrisApp(object):
     def init_game(self):
         self.board = new_board()
         self.new_stone()
+
+    def show_score(self):
+        # self.score_value += 1
+        score = self.font.render("SCORE: "+str(self.score_value), True, (255, 255, 255))
+        self.screen.blit(score, (config['cols'] * 13, 10))
 
     def center_msg(self, msg):
         for i, line in enumerate(msg.splitlines()):
@@ -130,6 +148,20 @@ class TetrisApp(object):
             if not check_collision(self.board, self.stone, (new_x, self.stone_y)):
                 self.stone_x = new_x
 
+    def fighter(self):
+        print('fighter')
+
+    def fighterMove(self, deltaX):
+        print('move', deltaX)
+
+    def fire(self):
+        print('fire')
+
+    def setImage(self):
+        self.imageNo += 1
+        if self.imageNo == 5:
+            self.imageNo = 1
+
     def quit(self):
         self.center_msg("Exiting.......")
         pygame.display.update()
@@ -144,6 +176,7 @@ class TetrisApp(object):
                 while True:
                     for i, row in enumerate(self.board[:-1]):
                         if 0 not in row:
+                            self.score_value += 10
                             self.board = remove_row(self.board, i)
                             break
                     else:
@@ -171,7 +204,11 @@ class TetrisApp(object):
             'DOWN': self.drop,
             'UP': self.rotate_stone,
             'p': self.toggle_pause,
-            'SPACE': self.start_game
+            'SPACE': self.start_game,
+            'f': self.fire,
+            'a': self.fighterMove(-1),
+            's': self.fighterMove(+1),
+            'b': self.setImage
         }
 
         self.gameover = False
@@ -183,6 +220,19 @@ class TetrisApp(object):
         # Game loop
         while 1:
             self.screen.fill((0, 0, 0))
+            # set background
+            if self.imageNo == 1:
+                self.screen.blit(backImage1, (0, 0))
+            elif self.imageNo == 2:
+                self.screen.blit(backImage2, (0, 0))
+            elif self.imageNo == 3:
+                self.screen.blit(backImage3, (0, 0))
+            else:
+                self.screen.blit(backImage4, (0, 0))
+
+            self.screen.blit(jetImage, (0, 0))
+            self.show_score()
+
             if self.gameover:
                 self.center_msg("""Game Over! Press space to continue.....""")
             else:
